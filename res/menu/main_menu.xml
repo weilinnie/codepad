@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/open_menu" android:title="Open"
+		android:icon="@android:drawable/ic_menu_view">
+	</item>
+	<item android:id="@+id/search_menu" android:title="Search"
+		android:icon="@android:drawable/ic_menu_search">
+	</item>
+	<item android:id="@+id/select_menu" android:title="Select"
+		android:icon="@android:drawable/ic_menu_edit">
+	</item>
+	<item android:id="@+id/more_menu" android:title="More"
+		android:enabled="true" android:icon="@android:drawable/ic_menu_more">
+		<menu>
+			<item android:id="@+id/home_menu" android:title="Home"
+				android:enabled="true">
+			</item>
+			<item android:id="@+id/help_menu" android:title="Help"
+				android:enabled="true">
+			</item>
+			<item android:id="@+id/about_menu" android:title="About"
+				android:enabled="true">
+			</item>
+			<item android:id="@+id/quit_menu" android:title="Quit CodePad"
+				android:enabled="true">
+			</item>
+
+		</menu>
+	</item>
+</menu>
