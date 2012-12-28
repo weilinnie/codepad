@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry kind="lib" path="/home/winiex/develop/android-sdk-linux_x86/platforms/android-8/android.jar" sourcepath="/home/winiex/software/eclipse/plugins/com.android.ide.eclipse.source_16.0.0.201112171909/8/sources.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/winiex/develop/android-sdk-linux_x86/docs/reference"/>
+		</attributes>
+		<accessrules>
+			<accessrule kind="nonaccessible" pattern="com/android/internal/**"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="output" path="bin/classes"/>
+</classpath>

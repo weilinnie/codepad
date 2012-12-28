@@ -1,10 +1,10 @@
 package info.winiex.codepad.ui;
 
-import info.winiex.codepad.R;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import info.winiex.codepad.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -18,10 +18,11 @@ public class FileBrowserHelper {
 	public enum DISPLAYMODE {
 		ABSOLUTE, RELATIVE;
 	}
-	
-	private final String[] fileTypes = {".java",".cpp",".cc",".c",".html",".htm",".xhtml",".js",".mxml",
-			".pl",".py",".rb",".xml",".css",".el",".lisp",".scm",".lua",".ml",".vb",".bas",".sql"};
 
+	private final String[] fileTypes = { ".java", ".cpp", ".cc", ".c", ".html",
+			".htm", ".xhtml", ".js", ".mxml", ".pl", ".py", ".rb", ".xml",
+			".css", ".el", ".lisp", ".scm", ".lua", ".ml", ".vb", ".bas",
+			".sql" };
 
 	public final DISPLAYMODE displayMode = DISPLAYMODE.RELATIVE;
 
@@ -62,23 +63,22 @@ public class FileBrowserHelper {
 			this.currentDirectory = aDirectory;
 			fill(aDirectory.listFiles());
 		} else {
-			
-			if(!this.isFileSupported(aDirectory.toString())){
+
+			if (!this.isFileSupported(aDirectory.toString())) {
 				AlertDialog.Builder alert = new AlertDialog.Builder(context);
-				
+
 				alert.setTitle("File Not Supported")
-				.setMessage("You know i am a \"CodePad\", so i can't open this type of file.Sorry, but please go on.")
-				.setNeutralButton("OK", null)
-				.create()
-				.show();
+						.setMessage(
+								"You know i am a \"CodePad\", so i can't open this type of file.Sorry, but please go on.")
+						.setNeutralButton("OK", null).create().show();
 				return;
 			}
-			
+
 			if (context instanceof FileBrowser) {
 				Intent resultIntent = new Intent(
 						android.content.Intent.ACTION_VIEW, Uri.parse("file://"
 								+ aDirectory.getAbsolutePath()));
-				
+
 				context.setResult(Activity.RESULT_OK, resultIntent);
 				context.finish();
 			} else if (context instanceof HTMLViewerPlusPlus) {

@@ -71,9 +71,8 @@ public class HTMLViewerPlusPlus extends Activity {
 	private String projectHome;
 	private SharedPreferences settings;
 	private SharedPreferences.OnSharedPreferenceChangeListener mOnSharedPreferenceChangeListener;
-	
+
 	private String currentFile;
-	
 
 	/**
 	 * As the file content is loaded completely into RAM first, set a limitation
@@ -92,25 +91,23 @@ public class HTMLViewerPlusPlus extends Activity {
 
 		settings = getSharedPreferences("com.william.codepad.settings",
 				MODE_PRIVATE);
-		settings.registerOnSharedPreferenceChangeListener(
-				mOnSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener(){
+		settings.registerOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
 
-					@Override
-					public void onSharedPreferenceChanged(
-							SharedPreferences sharedPreferences, String key) {
-						if("projectHome".equals(key)){
-							String projectHome = sharedPreferences.getString(key, "/sdcard/");
-							helper.refreshListView(new File(projectHome));
-						}
-					}
-					
+			@Override
+			public void onSharedPreferenceChanged(
+					SharedPreferences sharedPreferences, String key) {
+				if ("projectHome".equals(key)) {
+					String projectHome = sharedPreferences.getString(key,
+							"/sdcard/");
+					helper.refreshListView(new File(projectHome));
 				}
-				);
-		
+			}
+
+		});
+
 		projectHome = settings.getString("projectHome", "/sdcard/");
 		String lastOpen = settings.getString("lastOpen", null);
-		
-		
+
 		mWebView = (WebView) findViewById(R.id.webView);
 		mSlidingDrawer = (SlidingDrawer) findViewById(R.id.drawer);
 
@@ -175,9 +172,9 @@ public class HTMLViewerPlusPlus extends Activity {
 					}
 
 				});
-		
+
 		helper = new FileBrowserHelper(this, drawerContent, projectHome);
-		
+
 		mWebView.setWebViewClient(new WebChrome2(this));
 
 		WebSettings s = mWebView.getSettings();
@@ -206,7 +203,7 @@ public class HTMLViewerPlusPlus extends Activity {
 				}
 			} else {
 				// Home Screen, Simple explanation
-				if(lastOpen!=null){
+				if (lastOpen != null) {
 					loadFile(Uri.parse(lastOpen), "text/plain");
 				} else {
 					mWebView.loadUrl("file:///android_asset/home.html");
@@ -436,12 +433,12 @@ public class HTMLViewerPlusPlus extends Activity {
 	 */
 	void loadFile(Uri uri, String mimeType) {
 		this.mWebView.freeMemory();
-		
-		if(uri.toString().equals(this.currentFile)){
+
+		if (uri.toString().equals(this.currentFile)) {
 			return;
 		}
 		this.currentFile = uri.toString();
-		
+
 		String path = uri.getPath();
 
 		DocumentHandler handler = getHandlerByExtension(path);
@@ -497,7 +494,8 @@ public class HTMLViewerPlusPlus extends Activity {
 
 		contentString.append(handler.getFileFormattedString(codeString
 				.toString()));
-		contentString.append("</code><br /><br /><br /><br /><br /></body></html> ");
+		contentString
+				.append("</code><br /><br /><br /><br /><br /></body></html> ");
 		mWebView.getSettings().setUseWideViewPort(true);
 		mWebView.loadDataWithBaseURL("file:///android_asset/",
 				contentString.toString(), handler.getFileMimeType(), "", "");
