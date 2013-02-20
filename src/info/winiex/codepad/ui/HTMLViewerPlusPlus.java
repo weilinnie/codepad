@@ -26,6 +26,8 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -71,9 +73,8 @@ public class HTMLViewerPlusPlus extends Activity {
 	private String projectHome;
 	private SharedPreferences settings;
 	private SharedPreferences.OnSharedPreferenceChangeListener mOnSharedPreferenceChangeListener;
-	
+
 	private String currentFile;
-	
 
 	/**
 	 * As the file content is loaded completely into RAM first, set a limitation
@@ -92,27 +93,27 @@ public class HTMLViewerPlusPlus extends Activity {
 
 		settings = getSharedPreferences("com.william.codepad.settings",
 				MODE_PRIVATE);
-		settings.registerOnSharedPreferenceChangeListener(
-				mOnSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener(){
+		settings.registerOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
 
-					@Override
-					public void onSharedPreferenceChanged(
-							SharedPreferences sharedPreferences, String key) {
-						if("projectHome".equals(key)){
-							String projectHome = sharedPreferences.getString(key, "/sdcard/");
-							helper.refreshListView(new File(projectHome));
-						}
-					}
-					
+			@Override
+			public void onSharedPreferenceChanged(
+					SharedPreferences sharedPreferences, String key) {
+				if ("projectHome".equals(key)) {
+					String projectHome = sharedPreferences.getString(key,
+							"/sdcard/");
+					helper.refreshListView(new File(projectHome));
 				}
-				);
-		
+			}
+
+		});
+
 		projectHome = settings.getString("projectHome", "/sdcard/");
 		String lastOpen = settings.getString("lastOpen", null);
-		
-		
-		mWebView = (WebView) findViewById(R.id.webView);
+
 		mSlidingDrawer = (SlidingDrawer) findViewById(R.id.drawer);
+		drawerHandle = (TextView) findViewById(R.id.handle);
+		drawerContent = (ListView) findViewById(R.id.content);
+		mWebView = (WebView) findViewById(R.id.webView);
 
 		mSlidingDrawer
 				.setOnDrawerCloseListener(new SlidingDrawer.OnDrawerCloseListener() {
@@ -138,9 +139,6 @@ public class HTMLViewerPlusPlus extends Activity {
 						mWebView.setClickable(false);
 					}
 				});
-
-		drawerHandle = (TextView) findViewById(R.id.handle);
-		drawerContent = (ListView) findViewById(R.id.content);
 
 		drawerContent
 				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -175,9 +173,9 @@ public class HTMLViewerPlusPlus extends Activity {
 					}
 
 				});
-		
+
 		helper = new FileBrowserHelper(this, drawerContent, projectHome);
-		
+
 		mWebView.setWebViewClient(new WebChrome2(this));
 
 		WebSettings s = mWebView.getSettings();
@@ -206,7 +204,7 @@ public class HTMLViewerPlusPlus extends Activity {
 				}
 			} else {
 				// Home Screen, Simple explanation
-				if(lastOpen!=null){
+				if (lastOpen != null) {
 					loadFile(Uri.parse(lastOpen), "text/plain");
 				} else {
 					mWebView.loadUrl("file:///android_asset/home.html");
@@ -214,12 +212,6 @@ public class HTMLViewerPlusPlus extends Activity {
 				setTitle("CodePad - Home");
 			}
 		}
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		CookieSyncManager.getInstance().startSync();
 	}
 
 	@Override
@@ -436,12 +428,12 @@ public class HTMLViewerPlusPlus extends Activity {
 	 */
 	void loadFile(Uri uri, String mimeType) {
 		this.mWebView.freeMemory();
-		
-		if(uri.toString().equals(this.currentFile)){
+
+		if (uri.toString().equals(this.currentFile)) {
 			return;
 		}
 		this.currentFile = uri.toString();
-		
+
 		String path = uri.getPath();
 
 		DocumentHandler handler = getHandlerByExtension(path);
@@ -480,8 +472,10 @@ public class HTMLViewerPlusPlus extends Activity {
 		contentString
 				.append("</head><body onload='prettyPrint()'><code class='"
 						+ handler.getFilePrettifyClass() + "'>");
+		contentString.append(1 + "   ");
 
 		StringBuilder codeString = new StringBuilder();
+		int i = 2;
 		while (true) {
 			int temp = 0;
 			try {
@@ -492,12 +486,24 @@ public class HTMLViewerPlusPlus extends Activity {
 			if (temp == -1) {
 				break;
 			}
+			if (temp == '\n') {
+				codeString.append((char) temp);
+				codeString.append(i + "   ", 0, 4);
+				i++;
+				try {
+					temp = bf.read();
+				} catch (Exception e) {
+					e.printStackTrace();
+					
+				}
+			}
 			codeString.append((char) temp);
 		}
 
 		contentString.append(handler.getFileFormattedString(codeString
 				.toString()));
-		contentString.append("</code><br /><br /><br /><br /><br /></body></html> ");
+		contentString
+				.append("</code><br /><br /><br /><br /><br /></body></html> ");
 		mWebView.getSettings().setUseWideViewPort(true);
 		mWebView.loadDataWithBaseURL("file:///android_asset/",
 				contentString.toString(), handler.getFileMimeType(), "", "");
@@ -550,7 +556,12 @@ public class HTMLViewerPlusPlus extends Activity {
 
 		final EditText text = (EditText) view.findViewById(R.id.search_text);
 
-		Button search = (Button) view.findViewById(R.id.search);
+		Button search;
+		Button next;
+		Button exit;
+		search = (Button) view.findViewById(R.id.search);
+		next = (Button) view.findViewById(R.id.search_next);
+		exit = (Button) view.findViewById(R.id.exit_search);
 
 		search.setOnClickListener(new View.OnClickListener() {
 
@@ -567,8 +578,6 @@ public class HTMLViewerPlusPlus extends Activity {
 			}
 		});
 
-		Button next = (Button) view.findViewById(R.id.search_next);
-
 		next.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -577,8 +586,6 @@ public class HTMLViewerPlusPlus extends Activity {
 
 			}
 		});
-
-		Button exit = (Button) view.findViewById(R.id.exit_search);
 
 		exit.setOnClickListener(new View.OnClickListener() {
 
@@ -626,6 +633,12 @@ public class HTMLViewerPlusPlus extends Activity {
 		 * 
 		 * alert.show();
 		 */
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		CookieSyncManager.getInstance().startSync();
 	}
 
 	@Override
